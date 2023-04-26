@@ -12,10 +12,12 @@
  * Enumeration with expected INS of APDU commands.
  */
 typedef enum {
-    GET_VERSION = 0x03,     /// version of the application
-    GET_APP_NAME = 0x04,    /// name of the application
-    GET_PUBLIC_KEY = 0x05,  /// public key of corresponding BIP32 path
-    SIGN_TX = 0x06          /// sign transaction with BIP32 path
+    GET_VERSION = 0x03,   /// version of the application
+    GET_APP_NAME = 0x04,  /// name of the application
+    GET_WITHDRAWAL_PK = 0x05,
+    GET_SIGNING_PK = 0x06,
+    GET_ETH1_WITHDRAWAL_ADDR = 0x07,
+    SIGN = 0x08
 } command_e;
 /**
  * Enumeration with parsing state.
