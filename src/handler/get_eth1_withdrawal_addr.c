@@ -3,7 +3,6 @@
 #include "io.h"
 #include "sw.h"
 #include "address.h"
-#include "transaction/types.h"
 #include "get_eth1_withdrawal_addr.h"
 
 #define PURPOSE   44 | (0x8 << 28)

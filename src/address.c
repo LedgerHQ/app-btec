@@ -25,8 +25,6 @@
 
 #include "address.h"
 
-#include "transaction/types.h"
-
 bool address_from_pubkey(const uint8_t public_key[static 65], uint8_t *out, size_t out_len) {
     uint8_t address[32] = {0};
     cx_sha3_t keccak256;
