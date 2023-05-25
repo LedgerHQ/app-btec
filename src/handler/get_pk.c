@@ -13,21 +13,35 @@ static int get_pk(const uint32_t *path, uint8_t path_length) {
     uint8_t yFlag = 0;
     uint8_t tmp[96];
     uint8_t bls_field[48];
+    int cmp_diff = 0;
+    cx_err_t ret;
 
     memset(tmp, 0, sizeof(tmp));
-    get_bls_sk(path, path_length, &sk);
-    cx_ecfp_generate_pair(CX_CURVE_BLS12_381_G1,
-                          (cx_ecfp_public_key_t *) &pk,
-                          (cx_ecfp_private_key_t *) &sk,
-                          1);
+    ret = get_bls_sk(path, path_length, &sk);
+    if (ret == CX_OK) {
+        ret = cx_ecfp_generate_pair_no_throw(CX_CURVE_BLS12_381_G1,
+                                             (cx_ecfp_public_key_t *) &pk,
+                                             (cx_ecfp_private_key_t *) &sk,
+                                             1);
+    }
     memset(&sk, 0, sizeof(sk));
     tmp[47] = 2;
-    cx_math_mult(tmp, pk.W + 1 + 48, tmp, 48);
-    cx_ecdomain_parameter(CX_CURVE_BLS12_381_G1,
-                          CX_CURVE_PARAM_Field,
-                          bls_field,
-                          sizeof(bls_field));
-    if (cx_math_cmp(tmp + 48, bls_field, 48) > 0) {
+    if (ret == CX_OK) {
+        ret = cx_math_mult_no_throw(tmp, pk.W + 1 + 48, tmp, 48);
+    }
+    if (ret == CX_OK) {
+        ret = cx_ecdomain_parameter(CX_CURVE_BLS12_381_G1,
+                                    CX_CURVE_PARAM_Field,
+                                    bls_field,
+                                    sizeof(bls_field));
+    }
+    if (ret == CX_OK) {
+        ret = cx_math_cmp_no_throw(tmp + 48, bls_field, 48, &cmp_diff);
+    }
+    if (ret != CX_OK) {
+        return io_send_sw(SW_BAD_STATE);
+    }
+    if (cmp_diff > 0) {
         yFlag = 0x20;
     }
     pk.W[1] &= 0x1f;

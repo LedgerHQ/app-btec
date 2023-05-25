@@ -32,16 +32,30 @@ void sign(bool approved) {
     uint32_t path[] = {PURPOSE, COIN_TYPE, g_index, 0};
     uint8_t hash[192];
     uint8_t sig[96];
+    cx_err_t ret;
 
     if (!approved) {
         io_send_sw(SW_DENY);
         return;
     }
-    cx_hash_to_field(g_signing_root, SIGNING_ROOT_SIZE, dst, sizeof(dst) - 1, hash, sizeof(hash));
-    get_bls_sk(path, ARRAYLEN(path), &sk);
-    ox_bls12381_sign(&sk, hash, sizeof(hash), sig, sizeof(sig));
+    ret = cx_hash_to_field(g_signing_root,
+                           SIGNING_ROOT_SIZE,
+                           dst,
+                           sizeof(dst) - 1,
+                           hash,
+                           sizeof(hash));
+    if (ret == CX_OK) {
+        ret = get_bls_sk(path, ARRAYLEN(path), &sk);
+    }
+    if (ret == CX_OK) {
+        ret = ox_bls12381_sign(&sk, hash, sizeof(hash), sig, sizeof(sig));
+    }
     memset(&sk, 0, sizeof(sk));
-    buffer_t rdata = {.ptr = sig, .size = sizeof(sig), .offset = 0};
+    if (ret != CX_OK) {
+        io_send_sw(SW_BAD_STATE);
+    } else {
+        buffer_t rdata = {.ptr = sig, .size = sizeof(sig), .offset = 0};
 
-    io_send_response_buffer(&rdata, SW_OK);
+        io_send_response_buffer(&rdata, SW_OK);
+    }
 }

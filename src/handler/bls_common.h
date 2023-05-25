@@ -7,6 +7,6 @@
 #define PURPOSE   12381
 #define COIN_TYPE 3600
 
-void get_bls_sk(const uint32_t *path, uint8_t path_length, cx_ecfp_384_private_key_t *sk);
+cx_err_t get_bls_sk(const uint32_t *path, uint8_t path_length, cx_ecfp_384_private_key_t *sk);
 
 #endif  // BLS_COMMON_H_
