@@ -51,7 +51,7 @@ int apdu_dispatcher(const command_t *cmd) {
             return handler_get_app_name();
 
         case GET_WITHDRAWAL_PK:
-            if ((cmd->p1 > 1) || (cmd->p2 > 0)) {
+            if ((cmd->p1 != 0) || (cmd->p2 != 0)) {
                 return io_send_sw(SW_WRONG_P1P2);
             } else if (cmd->lc != sizeof(uint32_t)) {
                 return io_send_sw(SW_WRONG_DATA_LENGTH);
@@ -59,7 +59,7 @@ int apdu_dispatcher(const command_t *cmd) {
             return handler_get_withdrawal_pk(U4BE(cmd->data, 0));
 
         case GET_SIGNING_PK:
-            if ((cmd->p1 > 1) || (cmd->p2 > 0)) {
+            if ((cmd->p1 != 0) || (cmd->p2 != 0)) {
                 return io_send_sw(SW_WRONG_P1P2);
             } else if (cmd->lc != sizeof(uint32_t)) {
                 return io_send_sw(SW_WRONG_DATA_LENGTH);
@@ -67,7 +67,7 @@ int apdu_dispatcher(const command_t *cmd) {
             return handler_get_signing_pk(U4BE(cmd->data, 0));
 
         case GET_ETH1_WITHDRAWAL_ADDR:
-            if ((cmd->p1 > 1) || (cmd->p2 > 0)) {
+            if ((cmd->p1 != 0) || (cmd->p2 != 0)) {
                 return io_send_sw(SW_WRONG_P1P2);
             } else if (cmd->lc != sizeof(uint32_t)) {
                 return io_send_sw(SW_WRONG_DATA_LENGTH);
@@ -75,7 +75,7 @@ int apdu_dispatcher(const command_t *cmd) {
             return handler_get_eth1_withdrawal_addr(U4BE(cmd->data, 0));
 
         case SIGN:
-            if ((cmd->p1 > 1) || (cmd->p2 > 0)) {
+            if ((cmd->p1 != 0) || (cmd->p2 != 0)) {
                 return io_send_sw(SW_WRONG_P1P2);
             } else if (cmd->lc != (sizeof(uint32_t) + SIGNING_ROOT_SIZE)) {
                 return io_send_sw(SW_WRONG_DATA_LENGTH);
