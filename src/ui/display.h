@@ -1,24 +1,6 @@
 #pragma once
 
-#include <stdbool.h>  // bool
+extern char g_index_str[10 + 1];
+extern char g_signing_root_str[2 + (SIGNING_ROOT_SIZE * 2) + 1];
 
-/**
- * Callback to reuse action with approve/reject in step FLOW.
- */
-typedef void (*action_validate_cb)(bool);
-
-/**
- * Display address on the device and ask confirmation to export.
- *
- * @return 0 if success, negative integer otherwise.
- *
- */
-int ui_display_address(void);
-
-/**
- * Display transaction information on the device and ask confirmation to sign.
- *
- * @return 0 if success, negative integer otherwise.
- *
- */
-int ui_display_transaction(void);
+void ui_display_sign(void);
