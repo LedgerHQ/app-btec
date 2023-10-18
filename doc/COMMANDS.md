@@ -50,7 +50,7 @@
 
 | Response length (bytes) | SW | RData |
 | --- | --- | --- |
-| var | 0x9000 | `publick key (48)` |
+| var | 0x9000 | `public key (48)` |
 
 ## GET_SIGNING_PK
 
@@ -64,7 +64,7 @@
 
 | Response length (bytes) | SW | RData |
 | --- | --- | --- |
-| var | 0x9000 | `publick key (48)` |
+| var | 0x9000 | `public key (48)` |
 
 ## SIGN
 
