@@ -1,6 +1,6 @@
 # Ledger BTEC Application
 
-:warning: This is only supported on the Nano X *for now* :warning:
+:warning: This is only supported on Nano X / Nano S+ *for now* :warning:
 
 ## Prerequisite
 

@@ -33,7 +33,9 @@ bool address_from_pubkey(const uint8_t public_key[static 65], uint8_t *out, size
         return false;
     }
 
-    cx_keccak_init_no_throw(&keccak256, 256);
+    if (cx_keccak_init_no_throw(&keccak256, 256) != CX_OK) {
+        return false;
+    }
     if (cx_hash_no_throw((cx_hash_t *) &keccak256,
                          CX_LAST,
                          public_key + 1,
