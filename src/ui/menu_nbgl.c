@@ -36,15 +36,15 @@ void ui_menu_main(void) {
 
 // 'About' menu
 
-static const char* const INFO_TYPES[] = {"Version", "Developer"};
-static const char* const INFO_CONTENTS[] = {APPVERSION, "Ledger"};
+static const char *const INFO_TYPES[] = {"Version", "Developer"};
+static const char *const INFO_CONTENTS[] = {APPVERSION, "Ledger"};
 
-static bool nav_callback(uint8_t page, nbgl_pageContent_t* content) {
+static bool nav_callback(uint8_t page, nbgl_pageContent_t *content) {
     UNUSED(page);
     content->type = INFOS_LIST;
     content->infosList.nbInfos = 2;
-    content->infosList.infoTypes = (const char**) INFO_TYPES;
-    content->infosList.infoContents = (const char**) INFO_CONTENTS;
+    content->infosList.infoTypes = (const char **) INFO_TYPES;
+    content->infosList.infoContents = (const char **) INFO_CONTENTS;
     return true;
 }
 
