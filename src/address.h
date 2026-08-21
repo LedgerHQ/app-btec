@@ -4,6 +4,8 @@
 #include <stddef.h>   // size_t
 #include <stdbool.h>  // bool
 
+#define ADDRESS_LEN 20
+
 /**
  * Convert public key to address.
  *

@@ -28,8 +28,6 @@
 #include "ui/menu.h"
 #include "apdu/dispatcher.h"
 
-global_ctx_t G_context;
-
 /**
  * Handle APDU command received and send back APDU response using handlers.
  */
@@ -42,9 +40,6 @@ void app_main() {
     io_init();
 
     ui_menu_main();
-
-    // Reset context
-    explicit_bzero(&G_context, sizeof(G_context));
 
     for (;;) {
         BEGIN_TRY {

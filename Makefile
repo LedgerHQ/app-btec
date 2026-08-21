@@ -21,10 +21,10 @@ endif
 
 include $(BOLOS_SDK)/Makefile.defines
 
-APPNAME      = "Boilerplate"
+APPNAME      = "BTEC"
 APPVERSION_M = 1
 APPVERSION_N = 0
-APPVERSION_P = 1
+APPVERSION_P = 0
 APPVERSION   = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
 # - <VARIANT_PARAM> is the name of the parameter which should be set
@@ -33,20 +33,20 @@ APPVERSION   = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 #   * It must at least contains one value.
 #   * Values can be the app ticker or anything else but should be unique.
 VARIANT_PARAM = COIN
-VARIANT_VALUES = BOL
+VARIANT_VALUES = btec
 
 APP_LOAD_PARAMS += --curve secp256k1
-APP_LOAD_PARAMS += --path "44'/1'"   # purpose=coin(44) / coin_type=Testnet(1)
+APP_LOAD_PARAMS += --path "44'/60'" --path "12381/3600" --curve bls12381g1
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
-    ICONNAME=icons/nanos_app_boilerplate.gif
+    ICONNAME=icons/nanos_app_btec.gif
 else ifeq ($(TARGET_NAME),TARGET_STAX)
-    ICONNAME=icons/stax_app_boilerplate_32px.gif
+    ICONNAME=icons/stax_app_btec_32px.gif
 else
-    ICONNAME=icons/nanox_app_boilerplate.gif
+    ICONNAME=icons/nanox_app_btec.gif
 endif
 
-ENABLE_BLUETOOTH = 1
+ENABLE_BLUETOOTH = 0
 
 # Enabling DEBUG flag will enable PRINTF and disable optimizations
 DEBUG ?= 0
@@ -55,10 +55,12 @@ ENABLE_NBGL_QRCODE   = 1
 ENABLE_NBGL_KEYBOARD = 0
 ENABLE_NBGL_KEYPAD   = 0
 
+DEFINES += HAVE_BLS
+
 APP_SOURCE_PATH += src
 
 #CUSTOM_APP_FLAGS = 0x000 # Set custom flags here, see appflags.h in SDK for flags definition
-#DISABLE_STANDARD_APP_FILES = 1 
+#DISABLE_STANDARD_APP_FILES = 1
 #DISABLE_DEFAULT_IO_SEPROXY_BUFFER_SIZE = 1 # To allow custom size declaration
 
 #DISABLE_STANDARD_APP_DEFINES = 1 # Will set all the following disablers

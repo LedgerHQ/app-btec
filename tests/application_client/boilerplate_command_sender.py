@@ -1,3 +1,4 @@
+import struct
 from enum import IntEnum
 from typing import Generator, List, Optional
 from contextlib import contextmanager
@@ -10,25 +11,13 @@ MAX_APDU_LEN: int = 255
 
 CLA: int = 0xE0
 
-class P1(IntEnum):
-    # Parameter 1 for first APDU number.
-    P1_START = 0x00
-    # Parameter 1 for maximum APDU number.
-    P1_MAX   = 0x03
-    # Parameter 1 for screen confirmation for GET_PUBLIC_KEY.
-    P1_CONFIRM = 0x01
-
-class P2(IntEnum):
-    # Parameter 2 for last APDU to receive.
-    P2_LAST = 0x00
-    # Parameter 2 for more APDU to receive.
-    P2_MORE = 0x80
-
 class InsType(IntEnum):
-    GET_VERSION    = 0x03
-    GET_APP_NAME   = 0x04
-    GET_PUBLIC_KEY = 0x05
-    SIGN_TX        = 0x06
+    GET_VERSION              = 0x03
+    GET_APP_NAME             = 0x04
+    GET_WITHDRAWAL_PK        = 0x05
+    GET_SIGNING_PK           = 0x06
+    GET_ETH1_WITHDRAWAL_ADDR = 0x07
+    SIGN                     = 0x08
 
 class Errors(IntEnum):
     SW_DENY                    = 0x6985
@@ -59,69 +48,60 @@ class BoilerplateCommandSender:
     def get_app_and_version(self) -> RAPDU:
         return self.backend.exchange(cla=0xB0,  # specific CLA for BOLOS
                                      ins=0x01,  # specific INS for get_app_and_version
-                                     p1=P1.P1_START,
-                                     p2=P2.P2_LAST,
+                                     p1=0x00,
+                                     p2=0x00,
                                      data=b"")
 
 
     def get_version(self) -> RAPDU:
         return self.backend.exchange(cla=CLA,
                                      ins=InsType.GET_VERSION,
-                                     p1=P1.P1_START,
-                                     p2=P2.P2_LAST,
+                                     p1=0x00,
+                                     p2=0x00,
                                      data=b"")
 
 
     def get_app_name(self) -> RAPDU:
         return self.backend.exchange(cla=CLA,
                                      ins=InsType.GET_APP_NAME,
-                                     p1=P1.P1_START,
-                                     p2=P2.P2_LAST,
+                                     p1=0x00,
+                                     p2=0x00,
                                      data=b"")
 
 
-    def get_public_key(self, path: str) -> RAPDU:
+    def get_signing_pk(self, index: int) -> RAPDU:
         return self.backend.exchange(cla=CLA,
-                                     ins=InsType.GET_PUBLIC_KEY,
-                                     p1=P1.P1_START,
-                                     p2=P2.P2_LAST,
-                                     data=pack_derivation_path(path))
+                                     ins=InsType.GET_SIGNING_PK,
+                                     p1=0x00,
+                                     p2=0x00,
+                                     data=struct.pack(">I", index))
+
+
+    def get_withdrawal_pk(self, index: int) -> RAPDU:
+        return self.backend.exchange(cla=CLA,
+                                     ins=InsType.GET_WITHDRAWAL_PK,
+                                     p1=0x00,
+                                     p2=0x00,
+                                     data=struct.pack(">I", index))
+
+
+    def get_eth1_withdrawal_addr(self, index: int) -> RAPDU:
+        return self.backend.exchange(cla=CLA,
+                                     ins=InsType.GET_ETH1_WITHDRAWAL_ADDR,
+                                     p1=0x00,
+                                     p2=0x00,
+                                     data=struct.pack(">I", index))
 
 
     @contextmanager
-    def get_public_key_with_confirmation(self, path: str) -> Generator[None, None, None]:
+    def sign(self, index: int, signing_root: bytes) -> Generator[None, None, None]:
         with self.backend.exchange_async(cla=CLA,
-                                         ins=InsType.GET_PUBLIC_KEY,
-                                         p1=P1.P1_CONFIRM,
-                                         p2=P2.P2_LAST,
-                                         data=pack_derivation_path(path)) as response:
+                                         ins=InsType.SIGN,
+                                         p1=0x00,
+                                         p2=0x00,
+                                         data=struct.pack(">I", index) + signing_root) as response:
             yield response
 
-
-    @contextmanager
-    def sign_tx(self, path: str, transaction: bytes) -> Generator[None, None, None]:
-        self.backend.exchange(cla=CLA,
-                              ins=InsType.SIGN_TX,
-                              p1=P1.P1_START,
-                              p2=P2.P2_MORE,
-                              data=pack_derivation_path(path))
-        messages = split_message(transaction, MAX_APDU_LEN)
-        idx: int = P1.P1_START + 1
-
-        for msg in messages[:-1]:
-            self.backend.exchange(cla=CLA,
-                                  ins=InsType.SIGN_TX,
-                                  p1=idx,
-                                  p2=P2.P2_MORE,
-                                  data=msg)
-            idx += 1
-
-        with self.backend.exchange_async(cla=CLA,
-                                         ins=InsType.SIGN_TX,
-                                         p1=idx,
-                                         p2=P2.P2_LAST,
-                                         data=messages[-1]) as response:
-            yield response
 
     def get_async_response(self) -> Optional[RAPDU]:
         return self.backend.last_async_response

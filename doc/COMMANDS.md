@@ -6,8 +6,9 @@
 | --- | --- | --- |
 | `GET_VERSION` | 0x03 | Get application version as `MAJOR`, `MINOR`, `PATCH` |
 | `GET_APP_NAME` | 0x04 | Get ASCII encoded application name |
-| `GET_PUBLIC_KEY` | 0x05 | Get public key given BIP32 path |
-| `SIGN_TX` | 0x06 | Sign transaction given BIP32 path and raw transaction |
+| `GET_WITHDRAWAL_PK` | 0x05 | Get withdrawal public key |
+| `GET_SIGNING_PK` | 0x06 | Get signing public key |
+| `SIGN` | 0x07 | Sign message |
 
 ## GET_VERSION
 
@@ -35,35 +36,49 @@
 
 | Response length (bytes) | SW | RData |
 | --- | --- | --- |
-| var | 0x9000 | `APPNAME (var)` |
+| var | 0x9000 | `"BTEC"` |
 
-## GET_PUBLIC_KEY
-
-### Command
-
-| CLA | INS | P1 | P2 | Lc | CData |
-| --- | --- | --- | --- | --- | --- |
-| 0xE0 | 0x05 | 0x00 (no display) <br> 0x01 (display) | 0x00 | 1 + 4n | `len(bip32_path) (1)` \|\|<br> `bip32_path{1} (4)` \|\|<br>`...` \|\|<br>`bip32_path{n} (4)` |
-
-### Response
-
-| Response length (bytes) | SW | RData |
-| --- | --- | --- |
-| var | 0x9000 | `len(public_key) (1)` \|\|<br> `public_key (var)` \|\|<br> `len(chain_code) (1)` \|\|<br> `chain_code (var)` |
-
-## SIGN_TX
+## GET_WITHDRAWAL_PK
 
 ### Command
 
 | CLA | INS | P1 | P2 | Lc | CData |
 | --- | --- | --- | --- | --- | --- |
-| 0xE0 | 0x06 | 0x00-0x03 (chunk index) | 0x00 (more) <br> 0x80 (last) | 1 + 4n | `len(bip32_path) (1)` \|\|<br> `bip32_path{1} (4)` \|\|<br>`...` \|\|<br>`bip32_path{n} (4)` |
+| 0xE0 | 0x05 | 0x00 | 0x00 | 0x04 | `account index (4)` |
 
 ### Response
 
 | Response length (bytes) | SW | RData |
 | --- | --- | --- |
-| var | 0x9000 | `len(signature) (1)` \|\| <br> `signature (var)` \|\| <br> `v (1)`|
+| var | 0x9000 | `publick key (48)` |
+
+## GET_SIGNING_PK
+
+### Command
+
+| CLA | INS | P1 | P2 | Lc | CData |
+| --- | --- | --- | --- | --- | --- |
+| 0xE0 | 0x06 | 0x00 | 0x00 | 0x04 | `account index (4)` |
+
+### Response
+
+| Response length (bytes) | SW | RData |
+| --- | --- | --- |
+| var | 0x9000 | `publick key (48)` |
+
+## SIGN
+
+### Command
+
+| CLA | INS | P1 | P2 | Lc | CData |
+| --- | --- | --- | --- | --- | --- |
+| 0xE0 | 0x07 | 0x00 | 0x00 | 0x24 | `account index (4)` \|\| `signing root (32)` |
+
+### Response
+
+| Response length (bytes) | SW | RData |
+| --- | --- | --- |
+| var | 0x9000 | `signature (96)` |
 
 ## Status Words
 
