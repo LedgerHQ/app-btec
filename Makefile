@@ -24,7 +24,7 @@ include $(BOLOS_SDK)/Makefile.defines
 APPNAME      = "BTEC"
 APPVERSION_M = 1
 APPVERSION_N = 0
-APPVERSION_P = 0
+APPVERSION_P = 1
 APPVERSION   = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
 # - <VARIANT_PARAM> is the name of the parameter which should be set
